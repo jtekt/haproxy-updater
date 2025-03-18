@@ -1,5 +1,7 @@
-FROM oven/bun:latest
-WORKDIR /app
+FROM node:20
+WORKDIR /usr/src/app
 COPY . .
-RUN bun i
-CMD ["bun", "index.ts"]
+RUN npm install
+RUN npm run build
+CMD [ "npm", "run", "start"]
+

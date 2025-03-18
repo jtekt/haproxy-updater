@@ -1,14 +1,20 @@
 {
   "name": "haproxy-updater",
-  "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "version": "1.0.0",
+  "description": "To be run with bun",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --outdir ./build -p . ",
+    "start": "node ./build/index.js"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "@kubernetes/client-node": "^1.1.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "typescript": "^5.8.2"
   }
 }
