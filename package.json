@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@kubernetes/client-node": "^1.1.0"
+    "@kubernetes/client-node": "^1.1.0",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
-    "dotenv": "^16.4.7",
     "typescript": "^5.8.2"
   }
 }

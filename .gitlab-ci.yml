@@ -4,7 +4,7 @@ stages:
 
 image: moreillon/ci-dind:4bca50d7
 services:
-  - name: docker:19.03.12-dind
+  - name: docker:24.0.7-dind
 
 variables:
   APPLICATION_NAME: haproxy-updater
@@ -17,8 +17,8 @@ build:
   stage: build
   only:
     - master
-  # tags:
-  #   - dind
+  tags:
+    - dind
   before_script:
     # Create repository if needed
     - >
@@ -36,8 +36,6 @@ build:
     - docker build -t ${CONTAINER_IMAGE_TAGGED} .
     # Build and push container image to registry
     - docker push ${CONTAINER_IMAGE_TAGGED}
-    # Cleanup
-    - docker image rm ${CONTAINER_IMAGE_TAGGED}
 
 deploy:
   stage: deploy
