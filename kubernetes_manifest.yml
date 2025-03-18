@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: ${APPLICATION_NAME}
 spec:
-  schedule: "50 * * * *"
+  schedule: "54 * * * *"
   jobTemplate:
     spec:
       template:
@@ -16,6 +16,9 @@ spec:
               envFrom:
                 - secretRef:
                     name: haproxy-updater-env
+          imagePullSecrets:
+            - name: ${K8S_ECR_SECRET_NAME}
+
 ---
 apiVersion: v1
 kind: ServiceAccount
