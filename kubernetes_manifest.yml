@@ -9,7 +9,7 @@ spec:
       template:
         spec:
           serviceAccountName: ${APPLICATION_NAME}
-          # restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: ${APPLICATION_NAME}
               image: ${CONTAINER_IMAGE_TAGGED}
