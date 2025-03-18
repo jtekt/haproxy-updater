@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ${APPLICATION_NAME}
+spec:
+  schedule: "50 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: ${APPLICATION_NAME}
+          # restartPolicy: OnFailure
+          containers:
+            - name: ${APPLICATION_NAME}
+              image: ${CONTAINER_IMAGE_TAGGED}
+              envFrom:
+                - secretRef:
+                    name: haproxy-updater-env
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${APPLICATION_NAME}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ${APPLICATION_NAME}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: ${APPLICATION_NAME}
+    namespace: moreillon
