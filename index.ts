@@ -28,8 +28,8 @@ async function main() {
         .includes(node.address)
     ) {
       console.log(`Node ${node.name} is missing in HAProxy, adding it`);
-      // const haProxyConfigVersion = await getConfigVersion();
-      // await registerBackendServer(node, haProxyConfigVersion);
+      const haProxyConfigVersion = await getConfigVersion();
+      await registerBackendServer(node, haProxyConfigVersion);
     } else {
       console.log(`Node ${node.name} EXISTS in HAProxy, skipping...`);
     }
