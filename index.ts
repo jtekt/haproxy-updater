@@ -21,21 +21,32 @@ async function main() {
     `HAProxy has ${haProxyBackendServers.length} registered backend server(s)`
   );
 
+  // Registering nodes that are not servers yet
   for (const node of nodes) {
-    if (
-      !haProxyBackendServers
-        .map(({ address }: Server) => address)
-        .includes(node.address)
-    ) {
+    const nodeIsInHaProxy = haProxyBackendServers
+      .map(({ address }: Server) => address)
+      .includes(node.address);
+
+    if (!nodeIsInHaProxy) {
       console.log(`Node ${node.name} is missing in HAProxy, adding it`);
       const haProxyConfigVersion = await getConfigVersion();
       await registerBackendServer(node, haProxyConfigVersion);
-    } else {
-      console.log(`Node ${node.name} EXISTS in HAProxy, skipping...`);
     }
   }
 
-  // TODO: deal with the removal of backendServers if node does not exist
+  // Deregistering servers that are not nodes
+  for (const server of haProxyBackendServers) {
+    const serverIsNode = nodes
+      .map(({ address }: Server) => address)
+      .includes(server.address);
+
+    if (!serverIsNode) {
+      console.log(
+        `Server ${server.name} isnot a node, removing it from HAProxy`
+      );
+      // TODO: deal with the removal of backendServers if node does not exist
+    }
+  }
 }
 
 main();
