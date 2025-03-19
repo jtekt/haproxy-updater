@@ -1,5 +1,7 @@
-To be run with bun
+# HAProxy updater
 
-Ref
+Registers nodes of a K8s cluster as backend servers in HAProxy via the Data Plane API.
 
-https://www.haproxy.com/documentation/haproxy-data-plane-api/tutorials/backends/
+## References
+
+- https://www.haproxy.com/documentation/haproxy-data-plane-api/tutorials/backends/
