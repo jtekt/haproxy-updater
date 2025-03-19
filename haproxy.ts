@@ -1,3 +1,8 @@
+export type Server = {
+  address: string;
+  name: string;
+};
+
 export const {
   HAPROXY_DATA_PLANE_API_URL = "http://localhost:5555",
   HAPROXY_DATA_PLANE_API_USERNAME = "",
@@ -6,12 +11,7 @@ export const {
   HAPROXY_CHECK_PORT = "32767",
 } = process.env;
 
-export type Server = {
-  address: string;
-  name: string;
-};
-
-export async function getConfigVersion() {
+async function getConfigVersion() {
   const authHeader =
     "Basic " +
     Buffer.from(
@@ -98,7 +98,7 @@ export async function removeBackendServer(name: string) {
     },
   };
 
-  const url = `${HAPROXY_DATA_PLANE_API_URL}/v3/services/haproxy/configuration/backends/${HAPROXY_BACKEND_NAME}/servers${name}/?version=${version}`;
+  const url = `${HAPROXY_DATA_PLANE_API_URL}/v3/services/haproxy/configuration/backends/${HAPROXY_BACKEND_NAME}/servers/${name}?version=${version}`;
 
   const response = await fetch(url, init);
   if (!response.ok) throw new Error(await response.text());

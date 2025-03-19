@@ -1,6 +1,5 @@
 import { getNodes } from "./k8s";
 import {
-  getConfigVersion,
   listBackendServers,
   registerBackendServer,
   HAPROXY_DATA_PLANE_API_URL,
