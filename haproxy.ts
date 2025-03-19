@@ -56,7 +56,7 @@ export async function registerBackendServer(
 ) {
   const body = {
     check: "enabled",
-    health_check_port: 16443,
+    health_check_port: 32767,
     address,
     name,
   };
