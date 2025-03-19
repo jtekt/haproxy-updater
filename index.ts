@@ -22,6 +22,7 @@ async function main() {
   );
 
   // Registering nodes that are not servers yet
+  console.log(`Registering nodes in HAproxy...`);
   for (const node of nodes) {
     const nodeIsInHaProxy = haProxyBackendServers
       .map(({ address }: Server) => address)
@@ -31,10 +32,13 @@ async function main() {
       console.log(`Node ${node.name} is missing in HAProxy, adding it...`);
       await registerBackendServer(node);
       console.log(`Node ${node.name} added to HAProxy`);
+    } else {
+      console.log(`Node ${node.name} is already registered in HAPrroxy`);
     }
   }
 
   // Deregistering servers that are not nodes
+  console.log(`Unregistering deleted nodes from HAproxy...`);
   for (const server of haProxyBackendServers) {
     const serverIsNode = nodes
       .map(({ address }: Server) => address)
