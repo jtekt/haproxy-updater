@@ -51,10 +51,8 @@ export async function listBackendServers() {
   return await response.json();
 }
 
-export async function registerBackendServer(
-  { address, name }: Server,
-  version: string
-) {
+export async function registerBackendServer({ address, name }: Server) {
+  const version = await getConfigVersion();
   const body = {
     check: "enabled",
     health_check_port: Number(HAPROXY_CHECK_PORT),
@@ -81,9 +79,28 @@ export async function registerBackendServer(
 
   const response = await fetch(url, init);
   if (!response.ok) throw new Error(await response.text());
-  const text = await response.text();
+  // const text = await response.text();
 }
 
-export async function removeBackendServer(name: string, version: number) {
-  // WIP
+export async function removeBackendServer(name: string) {
+  const version = await getConfigVersion();
+
+  const authHeader =
+    "Basic " +
+    Buffer.from(
+      HAPROXY_DATA_PLANE_API_USERNAME + ":" + HAPROXY_DATA_PLANE_API_PASSWORD
+    ).toString("base64");
+
+  const init: RequestInit = {
+    method: "DELETE",
+    headers: {
+      Authorization: authHeader,
+    },
+  };
+
+  const url = `${HAPROXY_DATA_PLANE_API_URL}/v3/services/haproxy/configuration/backends/${HAPROXY_BACKEND_NAME}/servers${name}/?version=${version}`;
+
+  const response = await fetch(url, init);
+  if (!response.ok) throw new Error(await response.text());
+  // const text = await response.text();
 }

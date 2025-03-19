@@ -6,6 +6,7 @@ import {
   HAPROXY_DATA_PLANE_API_URL,
   type Server,
   HAPROXY_BACKEND_NAME,
+  removeBackendServer,
 } from "./haproxy";
 
 async function main() {
@@ -28,9 +29,9 @@ async function main() {
       .includes(node.address);
 
     if (!nodeIsInHaProxy) {
-      console.log(`Node ${node.name} is missing in HAProxy, adding it`);
-      const haProxyConfigVersion = await getConfigVersion();
-      await registerBackendServer(node, haProxyConfigVersion);
+      console.log(`Node ${node.name} is missing in HAProxy, adding it...`);
+      await registerBackendServer(node);
+      console.log(`Node ${node.name} added to HAProxy`);
     }
   }
 
@@ -42,9 +43,10 @@ async function main() {
 
     if (!serverIsNode) {
       console.log(
-        `Server ${server.name} isnot a node, removing it from HAProxy`
+        `Server ${server.name} is not a node, removing it from HAProxy...`
       );
-      // TODO: deal with the removal of backendServers if node does not exist
+      await removeBackendServer(server.name);
+      console.log(`Server ${server.name} removed from HAProxy`);
     }
   }
 }
