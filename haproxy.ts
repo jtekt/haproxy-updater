@@ -8,6 +8,7 @@ export const {
   HAPROXY_DATA_PLANE_API_USERNAME = "",
   HAPROXY_DATA_PLANE_API_PASSWORD = "",
   HAPROXY_BACKEND_NAME = "",
+  HAPROXY_BACKEND_SERVERS_PORT,
   HAPROXY_CHECK_PORT = "32767",
 } = process.env;
 
@@ -53,11 +54,15 @@ export async function listBackendServers() {
 
 export async function registerBackendServer({ address, name }: Server) {
   const version = await getConfigVersion();
+
   const body = {
     check: "enabled",
     health_check_port: Number(HAPROXY_CHECK_PORT),
     address,
     name,
+    port: HAPROXY_BACKEND_SERVERS_PORT
+      ? Number(HAPROXY_BACKEND_SERVERS_PORT)
+      : undefined,
   };
 
   const authHeader =
