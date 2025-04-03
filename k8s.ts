@@ -1,10 +1,12 @@
 import * as k8s from "@kubernetes/client-node";
 
+const { NODE_ENV } = process.env;
+
 export async function getNodes() {
   const kc = new k8s.KubeConfig();
 
-  // kc.loadFromDefault();
-  kc.loadFromCluster();
+  if (NODE_ENV === "dev") kc.loadFromDefault();
+  else kc.loadFromCluster();
 
   const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
   const { items } = await k8sApi.listNode();

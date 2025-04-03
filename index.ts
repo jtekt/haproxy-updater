@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { getNodes } from "./k8s";
 import {
   listBackendServers,
