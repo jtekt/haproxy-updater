@@ -4,9 +4,9 @@ import {
   listBackendServers,
   registerBackendServer,
   HAPROXY_DATA_PLANE_API_URL,
-  type Server,
   HAPROXY_BACKEND_NAME,
   removeBackendServer,
+  type Server,
 } from "./haproxy";
 
 async function main() {

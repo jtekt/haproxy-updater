@@ -5,20 +5,28 @@ export type Server = {
 
 export const {
   HAPROXY_DATA_PLANE_API_URL = "http://localhost:5555",
-  HAPROXY_DATA_PLANE_API_USERNAME = "",
-  HAPROXY_DATA_PLANE_API_PASSWORD = "",
-  HAPROXY_BACKEND_NAME = "",
+  HAPROXY_DATA_PLANE_API_USERNAME,
+  HAPROXY_DATA_PLANE_API_PASSWORD,
+  HAPROXY_BACKEND_NAME,
   HAPROXY_BACKEND_SERVERS_PORT,
-  HAPROXY_CHECK_PORT = "32767",
+  HAPROXY_CHECK,
+  HAPROXY_CHECK_PORT,
 } = process.env;
 
-async function getConfigVersion() {
-  const authHeader =
-    "Basic " +
-    Buffer.from(
-      HAPROXY_DATA_PLANE_API_USERNAME + ":" + HAPROXY_DATA_PLANE_API_PASSWORD
-    ).toString("base64");
+// TODO: nicer validation
+if (!HAPROXY_BACKEND_NAME) throw new Error("HAPROXY_BACKEND_NAME not defined");
+if (!HAPROXY_DATA_PLANE_API_USERNAME)
+  throw new Error("HAPROXY_DATA_PLANE_API_USERNAME not defined");
+if (!HAPROXY_DATA_PLANE_API_PASSWORD)
+  throw new Error("HAPROXY_DATA_PLANE_API_PASSWORD not defined");
 
+const authHeader =
+  "Basic " +
+  Buffer.from(
+    HAPROXY_DATA_PLANE_API_USERNAME + ":" + HAPROXY_DATA_PLANE_API_PASSWORD
+  ).toString("base64");
+
+async function getConfigVersion() {
   const init: RequestInit = {
     headers: {
       Authorization: authHeader,
@@ -33,12 +41,6 @@ async function getConfigVersion() {
 }
 
 export async function listBackendServers() {
-  const authHeader =
-    "Basic " +
-    Buffer.from(
-      HAPROXY_DATA_PLANE_API_USERNAME + ":" + HAPROXY_DATA_PLANE_API_PASSWORD
-    ).toString("base64");
-
   const init: RequestInit = {
     headers: {
       Authorization: authHeader,
@@ -56,20 +58,16 @@ export async function registerBackendServer({ address, name }: Server) {
   const version = await getConfigVersion();
 
   const body = {
-    check: "enabled",
-    health_check_port: Number(HAPROXY_CHECK_PORT),
+    check: HAPROXY_CHECK || HAPROXY_CHECK_PORT ? "enabled" : "disabled",
+    health_check_port: HAPROXY_CHECK_PORT
+      ? Number(HAPROXY_CHECK_PORT)
+      : undefined,
     address,
     name,
     port: HAPROXY_BACKEND_SERVERS_PORT
       ? Number(HAPROXY_BACKEND_SERVERS_PORT)
       : undefined,
   };
-
-  const authHeader =
-    "Basic " +
-    Buffer.from(
-      HAPROXY_DATA_PLANE_API_USERNAME + ":" + HAPROXY_DATA_PLANE_API_PASSWORD
-    ).toString("base64");
 
   const init: RequestInit = {
     method: "POST",
@@ -89,12 +87,6 @@ export async function registerBackendServer({ address, name }: Server) {
 
 export async function removeBackendServer(name: string) {
   const version = await getConfigVersion();
-
-  const authHeader =
-    "Basic " +
-    Buffer.from(
-      HAPROXY_DATA_PLANE_API_USERNAME + ":" + HAPROXY_DATA_PLANE_API_PASSWORD
-    ).toString("base64");
 
   const init: RequestInit = {
     method: "DELETE",
