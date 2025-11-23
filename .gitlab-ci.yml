@@ -1,63 +1,21 @@
 stages:
   - build
-  - deploy
-
-image: moreillon/ci-dind:4bca50d7
-services:
-  - name: docker:24.0.7-dind
 
 variables:
   APPLICATION_NAME: haproxy-updater
   REPOSITORY_NAME: ${APPLICATION_NAME}
   CONTAINER_IMAGE: ${AWS_ECR_URL}/${REPOSITORY_NAME}
   CONTAINER_IMAGE_TAGGED: ${CONTAINER_IMAGE}:${CI_COMMIT_SHORT_SHA}
-  K8S_ECR_SECRET_NAME: ecr-credentials
 
 build:
   stage: build
   only:
     - master
-  tags:
-    - dind
   before_script:
-    # Create repository if needed
     - >
       aws ecr create-repository --repository-name ${REPOSITORY_NAME}
       || echo "Repository might have already existed"
-    # Log in to the registry (AWS credentials are stored as GitLab env variables)
-    - >
-      aws ecr get-login-password
-      | docker login
-      --username AWS
-      --password-stdin
-      ${AWS_ECR_URL}
   script:
-    # Build the container image
     - docker build -t ${CONTAINER_IMAGE_TAGGED} .
-    # Build and push container image to registry
     - docker push ${CONTAINER_IMAGE_TAGGED}
 
-deploy:
-  stage: deploy
-  only:
-    - master
-  tags:
-    - dind
-  before_script:
-    # Create a secret with ECR credentials for K8s to pull
-    # Here, we use apply to update it
-    # https://stackoverflow.com/questions/47369351/kubectl-apply-vs-kubectl-create
-    - >
-      kubectl create secret docker-registry ${K8S_ECR_SECRET_NAME}
-      --docker-server=${AWS_ECR_URL}
-      --docker-username=AWS
-      --docker-password $(aws ecr get-login-password)
-      --dry-run=client -o yaml
-      | kubectl apply -f -
-  script:
-    - envsubst < kubernetes_manifest.yml | kubectl apply -f -
-  environment:
-    name: production
-    kubernetes:
-      # NAMESPACE provided by GitLab
-      namespace: ${K8S_NAMESPACE}
